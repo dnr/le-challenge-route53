@@ -52,10 +52,12 @@ Challenge.create = function (options) {
 };
 
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
+  console.debug("SET CHALLENGE", opts.challenge);
   const keyAuthDigest = encrypt(keyAuthorization);
   const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
   return opts.hostedZone.then(id => {
       const params = route53CreatePayload(id, prefixedDomain, keyAuthDigest);
+      console.log("SET PARAMS", JSON.stringify(params));
       return changeResourceRecordSets(params)
         .then(() => store.set(domain, {
           id,
@@ -74,6 +76,7 @@ Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */
 /* eslint-enable no-unused-vars */
 
 Challenge.remove = function (opts, domain, token, cb) {
+  console.log("REMOVE CHALLENGE", opts.challenge);
   store.get(domain)
     .then(({id, domain, value}) => {
       const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
