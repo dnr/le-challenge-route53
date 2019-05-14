@@ -54,7 +54,7 @@ Challenge.create = function (options) {
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   console.debug("SET CHALLENGE", opts.challenge);
   const keyAuthDigest = encrypt(keyAuthorization);
-  const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
+  const prefixedDomain = opts.challenge.dnsHost;
   return opts.hostedZone.then(id => {
       const params = route53CreatePayload(id, prefixedDomain, keyAuthDigest);
       console.log("SET PARAMS", JSON.stringify(params));
@@ -77,9 +77,9 @@ Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */
 
 Challenge.remove = function (opts, domain, token, cb) {
   console.log("REMOVE CHALLENGE", opts.challenge);
+  const prefixedDomain = opts.challenge.dnsHost;
   store.get(domain)
     .then(({id, domain, value}) => {
-      const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
       const params = route53DeletePayload(id, prefixedDomain, value);
       return changeResourceRecordSets(params)
         .then(() => store.remove(domain));
