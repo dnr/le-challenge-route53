@@ -68,7 +68,9 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
     .then(() => {
       setTimeout(cb, opts.delay, null);
     })
-    .catch(cb);
+    .catch(() => {
+      setTimeout(cb, opts.delay, null);
+    });
 };
 
 /* eslint-disable no-unused-vars */
